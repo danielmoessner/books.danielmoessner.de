@@ -19,6 +19,10 @@ RUN mix deps.compile
 COPY lib lib
 RUN mix compile
 
+COPY assets assets
+RUN mix assets.deploy
+RUN mix phx.digest
+
 COPY config/runtime.exs config/
 RUN mix release
 
