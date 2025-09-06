@@ -14,6 +14,10 @@ defmodule BooksWeb.BookController do
   end
 
   def create(conn, %{"library_id" => library_id, "name" => name, "author" => author, "number" => number}) do
+    library = Repo.get(Library, library_id)
+    if is_nil(library) do
+      Repo.insert!(%Library{id: library_id})
+    end
     attrs = %{name: name, author: author, number: String.to_integer(number), library_id: library_id}
     case Repo.insert(Book.changeset(%Book{}, attrs)) do
       {:ok, _book} ->
