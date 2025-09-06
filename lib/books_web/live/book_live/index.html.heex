@@ -1,0 +1,11 @@
+<.form let={f} for={:search} phx-change="search" phx-debounce="300">
+  <input type="text" name="query" value={@query} placeholder="Search books..." class="input input-bordered w-full max-w-xs" />
+</.form>
+
+<ul>
+  <%= for book <- @books do %>
+    <li>
+      <strong><%= book.number %></strong> - <%= book.author %> - <%= book.name %>
+    </li>
+  <% end %>
+</ul>
