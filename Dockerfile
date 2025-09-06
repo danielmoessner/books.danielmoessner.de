@@ -11,7 +11,7 @@ RUN mix deps.get
 RUN mix deps.get
 
 RUN MIX_ENV=prod mix compile
-RUN MIX_ENV=prod mix assets.deploy
+RUN mix assets.deploy
 RUN MIX_ENV=prod mix release
 
 EXPOSE 4000
