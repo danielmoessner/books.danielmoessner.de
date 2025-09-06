@@ -4,15 +4,23 @@ RUN apt-get update && apt-get install -y nodejs sqlite3
 
 WORKDIR /app
 
-COPY mix.exs mix.lock ./
 RUN mix local.hex --force && mix local.rebar --force
+
+ENV MIX_ENV=prod
+
+COPY mix.exs mix.lock ./
 RUN mix deps.get
 
-RUN mix deps.get
+RUN mkdir config
+COPY config/config.exs config/prod.exs config/
 
-RUN MIX_ENV=prod mix compile
-RUN mix assets.deploy
-RUN MIX_ENV=prod mix release
+RUN mix deps.compile
+
+COPY lib lib
+RUN mix compile
+
+COPY config/runtime.exs config/
+RUN mix release
 
 EXPOSE 4000
 

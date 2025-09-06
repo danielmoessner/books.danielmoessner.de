@@ -35,3 +35,5 @@ books-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# custom
+.elixir_ls/
