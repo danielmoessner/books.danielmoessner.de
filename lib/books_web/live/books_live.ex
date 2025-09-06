@@ -123,7 +123,7 @@ defmodule BooksWeb.BooksLive do
           <div class="p-4 bg-yellow-50 border-b">
             <h3 class="text-lg font-semibold mb-4">Edit Book</h3>
             <form phx-submit="update_book" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <input type="hidden" name="id" value={@edit_book.id} />
+              <input type="hidden" value={@edit_book.id} />
               <input
                 name="name"
                 type="text"
