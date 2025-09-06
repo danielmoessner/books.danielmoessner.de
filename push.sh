@@ -1,0 +1,1 @@
+scp dev.sqlite3 root@captain.caprover.danielmoessner.de:/home/books.sqlite3
