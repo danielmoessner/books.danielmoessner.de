@@ -1,44 +1,108 @@
 <div class="container mx-auto px-4 py-8">
   <h1 class="text-3xl font-bold text-orange-600 mb-6">Books</h1>
 
-  <form method="post" action={~p"/libraries/#{@library_id}/books"} class="mb-8 bg-base-200 p-6 rounded-lg shadow">
+  <form
+    method="post"
+    action={~p"/libraries/#{@library_id}/books"}
+    class="mb-8 bg-base-200 p-6 rounded-lg shadow"
+  >
     <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <input name="name" type="text" placeholder="Book name" class="input input-bordered w-full" required />
-      <input name="author" type="text" placeholder="Author" class="input input-bordered w-full" required />
-      <input name="number" type="number" placeholder="Number" class="input input-bordered w-full" required />
-      <button type="submit" class="btn bg-orange-500 text-white hover:bg-orange-600 w-full">Add Book</button>
+      <input
+        name="name"
+        type="text"
+        placeholder="Book name"
+        class="input input-bordered w-full"
+        required
+      />
+      <input
+        name="author"
+        type="text"
+        placeholder="Author"
+        class="input input-bordered w-full"
+        required
+      />
+      <input
+        name="number"
+        type="number"
+        placeholder="Number"
+        class="input input-bordered w-full"
+        required
+      />
+      <button type="submit" class="btn bg-orange-500 text-white hover:bg-orange-600 w-full">
+        Add Book
+      </button>
     </div>
   </form>
 
-  <ul class="bg-white rounded-lg shadow divide-y divide-gray-200">
+  <ul class="bg-white rounded-lg shadow overflow-hidden divide-y divide-gray-200">
     <%= for book <- @books do %>
-      <li class="p-4 hover:bg-orange-50 flex flex-col md:flex-row md:items-center justify-between">
+      <li class="p-4 hover:bg-orange-50 flex flex-col md:flex-row md:items-center space-x-3">
+        <span class="text-sm text-gray-500">{book.number}</span>
         <div>
-          <span class="font-semibold text-orange-700"><%= book.name %></span>
-          <span class="text-gray-600">by <%= book.author %></span>
+          <span class="font-semibold text-orange-700">{book.name}</span>
+          <span class="text-gray-600">by {book.author}</span>
         </div>
-        <span class="text-sm text-gray-500">Number: <%= book.number %></span>
-        <div class="flex gap-2">
-          <a href={~p"/libraries/#{@library_id}/books/#{book.id}/edit"} class="btn btn-sm bg-orange-400 text-white hover:bg-orange-500">Edit</a>
-          <form method="post" action={~p"/libraries/#{@library_id}/books/#{book.id}"} class="ml-4">
-            <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
-            <input type="hidden" name="_method" value="delete" />
-            <button type="submit" class="btn btn-sm bg-red-500 text-white hover:bg-red-600">Delete</button>
-          </form>
+        <div class="ml-auto justify-end">
+          <div class="flex gap-2">
+            <a
+              href={~p"/libraries/#{@library_id}/books/#{book.id}/edit"}
+              class="btn btn-sm bg-orange-400 text-white hover:bg-orange-500"
+            >
+              Edit
+            </a>
+            <form
+              method="post"
+              action={~p"/libraries/#{@library_id}/books/#{book.id}"}
+              class="ml-4"
+            >
+              <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+              <input type="hidden" name="_method" value="delete" />
+              <button type="submit" class="btn btn-sm bg-red-500 text-white hover:bg-red-600">
+                Delete
+              </button>
+            </form>
+          </div>
+          <%= if @edit_book && @edit_book.id == book.id do %>
+            <form
+              method="post"
+              action={~p"/libraries/#{@library_id}/books/#{book.id}"}
+              class="mt-4"
+            >
+              <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+              <input type="hidden" name="_method" value="patch" />
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input
+                  name="name"
+                  type="text"
+                  value={book.name}
+                  class="input input-bordered w-full"
+                  required
+                />
+                <input
+                  name="author"
+                  type="text"
+                  value={book.author}
+                  class="input input-bordered w-full"
+                  required
+                />
+                <input
+                  name="number"
+                  type="number"
+                  value={book.number}
+                  class="input input-bordered w-full"
+                  required
+                />
+                <button
+                  type="submit"
+                  class="btn bg-orange-500 text-white hover:bg-orange-600 w-full"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          <% end %>
         </div>
-        <%= if @edit_book && @edit_book.id == book.id do %>
-          <form method="post" action={~p"/libraries/#{@library_id}/books/#{book.id}"} class="mt-4">
-            <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
-            <input type="hidden" name="_method" value="patch" />
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <input name="name" type="text" value={book.name} class="input input-bordered w-full" required />
-              <input name="author" type="text" value={book.author} class="input input-bordered w-full" required />
-              <input name="number" type="number" value={book.number} class="input input-bordered w-full" required />
-              <button type="submit" class="btn bg-orange-500 text-white hover:bg-orange-600 w-full">Save</button>
-            </div>
-          </form>
-        <% end %>
       </li>
     <% end %>
   </ul>

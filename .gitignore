@@ -38,3 +38,4 @@ npm-debug.log
 # custom
 .elixir_ls/
 *.sqlite3*
+import_books.exs
