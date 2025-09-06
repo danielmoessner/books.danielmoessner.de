@@ -37,3 +37,4 @@ npm-debug.log
 
 # custom
 .elixir_ls/
+*.sqlite3
