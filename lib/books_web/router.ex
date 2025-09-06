@@ -17,15 +17,8 @@ defmodule BooksWeb.Router do
   scope "/", BooksWeb do
     pipe_through :browser
 
-  get "/", PageController, :home
-  get "/libraries/:library_id/books", BookController, :index
-  post "/libraries/:library_id/books", BookController, :create
-  delete "/libraries/:library_id/books/:id", BookController, :delete
-  get "/libraries/:library_id/books/:id/edit", BookController, :edit
-  patch "/libraries/:library_id/books/:id", BookController, :update
-  put "/libraries/:library_id/books/:id", BookController, :update
-
-  live "/libraries/:library_id/books/search", BookLive, :index
+    get "/", PageController, :home
+    live "/libraries/:library_id/books", BooksLive, :index
   end
 
   # Other scopes may use custom stacks.
