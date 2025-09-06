@@ -29,3 +29,4 @@ RUN mix release
 EXPOSE 4000
 
 CMD ["/app/_build/prod/rel/books/bin/books", "start"]
+# CMD ["tail", "-f", "/dev/null"]

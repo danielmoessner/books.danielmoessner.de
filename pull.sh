@@ -1,1 +1,1 @@
-scp root@captain.caprover.danielmoessner.de:/home/books.sqlite3  dev.sqlite3
+scp root@captain.caprover.danielmoessner.de:/home/books.sqlite3  server.sqlite3
