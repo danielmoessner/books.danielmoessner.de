@@ -8,7 +8,8 @@ COPY mix.exs mix.lock ./
 RUN mix local.hex --force && mix local.rebar --force
 RUN mix deps.get
 
-COPY . .
+# Copy phoenix-colocated/books/index.js before assets compilation
+COPY _build/dev/phoenix-colocated/books/index.js _build/dev/phoenix-colocated/books/index.js
 
 RUN mix deps.get
 RUN mix assets.deploy
