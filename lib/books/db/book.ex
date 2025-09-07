@@ -8,6 +8,7 @@ defmodule Books.Book do
     field :author, :string
     field :number, :integer
     belongs_to :library, Books.Library, type: :binary_id
+
     timestamps()
   end
 

@@ -19,6 +19,11 @@ defmodule BooksWeb.Router do
 
     get "/", PageController, :home
     live "/libraries/:library_id/books", BooksLive, :index
+
+    live "/libraries/:library_id/boxes", BoxLive.Index, :index
+    live "/libraries/:library_id/boxes/new", BoxLive.Form, :new
+    live "/libraries/:library_id/boxes/:id", BoxLive.Show, :show
+    live "/libraries/:library_id/boxes/:id/edit", BoxLive.Form, :edit
   end
 
   # Other scopes may use custom stacks.
