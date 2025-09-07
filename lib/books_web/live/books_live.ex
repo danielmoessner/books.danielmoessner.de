@@ -67,7 +67,7 @@ defmodule BooksWeb.BooksLive do
 
   def handle_event(
         "update_book",
-        %{"id" => id, "name" => name, "author" => author, "number" => number},
+        %{"book_id" => id, "name" => name, "author" => author, "number" => number},
         socket
       ) do
     book = Repo.get!(Book, id)
@@ -146,7 +146,7 @@ defmodule BooksWeb.BooksLive do
               <div>
                 <%= if @edit_book && @edit_book.id == book.id do %>
                   <form phx-submit="update_book" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <input type="hidden" name="id" value={@edit_book.id} />
+                    <input type="hidden" name="book_id" value={@edit_book.id} />
                     <input
                       name="name"
                       type="text"
