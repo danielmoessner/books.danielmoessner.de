@@ -1,0 +1,8 @@
+{
+  "emmet.includeLanguages": {
+    "elixir": "html",
+    "eex": "html",
+    "heex": "html"
+  },
+  "emmet.triggerExpansionOnTab": true
+}

@@ -30,6 +30,11 @@ defmodule BooksWeb.CoreComponents do
 
   alias Phoenix.LiveView.JS
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: BooksWeb.Endpoint,
+    router: BooksWeb.Router,
+    statics: BooksWeb.static_paths()
+
   @doc """
   Renders flash notices.
 
@@ -456,5 +461,51 @@ defmodule BooksWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  @doc """
+  Renders a table of books with actions.
+
+  ## Examples
+
+      <.book_table
+        books={@streams.books}
+        library_id={@library_id}
+        box_id={@box.id}
+        on_delete="delete"
+      />
+  """
+  attr :books, :any, required: true, doc: "the stream of books to display"
+  attr :library_id, :string, required: true, doc: "the library ID for navigation"
+  attr :box_id, :string, required: false, doc: "the box ID for navigation"
+  attr :on_delete, :string, default: "delete", doc: "the event name for delete action"
+  attr :return_to, :string, default: "box", doc: "where to return after edit"
+
+  def book_table(assigns) do
+    ~H"""
+    <.table
+      id="books"
+      rows={@books}
+      row_click={fn {_id, book} -> JS.navigate(~p"/libraries/#{assigns.library_id}/books/#{book}") end}
+    >
+      <:col :let={{_id, book}} label="Book">{book.number}</:col>
+      <:col :let={{_id, book}} label="Name">{book.name}</:col>
+      <:col :let={{_id, book}} label="Author">{book.author}</:col>
+      <:action :let={{_id, book}}>
+        <div class="sr-only">
+          <.link navigate={~p"/libraries/#{@library_id}/books/#{book}"}>Show</.link>
+        </div>
+        <.link navigate={~p"/libraries/#{@library_id}/books/#{book}/edit?return_to=#{@return_to}"}>Edit</.link>
+      </:action>
+      <:action :let={{id, book}}>
+        <.link
+          phx-click={JS.push(@on_delete, value: %{id: book.id}) |> hide("##{id}")}
+          data-confirm="Are you sure?"
+        >
+          Delete
+        </.link>
+      </:action>
+    </.table>
+    """
   end
 end

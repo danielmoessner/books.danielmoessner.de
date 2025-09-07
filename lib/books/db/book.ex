@@ -8,13 +8,14 @@ defmodule Books.Book do
     field :author, :string
     field :number, :integer
     belongs_to :library, Books.Library, type: :binary_id
+    belongs_to :box, Books.Box, type: :binary_id
 
     timestamps()
   end
 
   def changeset(book, attrs) do
     book
-    |> cast(attrs, [:name, :author, :number, :library_id])
+    |> cast(attrs, [:name, :author, :number, :library_id, :box_id])
     |> validate_required([:name, :author, :number, :library_id])
   end
 end

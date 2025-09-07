@@ -17,7 +17,7 @@ defmodule BooksWeb.BoxLive.Form do
         <.input field={@form[:name]} type="text" label="Name" />
         <footer>
           <.button phx-disable-with="Saving..." variant="primary">Save Box</.button>
-          <.button navigate={return_path(@return_to, @box, @library_id)}>Cancel</.button>
+          <.button navigate={return_path("library", @box.id, @library_id)}>Cancel</.button>
         </footer>
       </.form>
     </Layouts.app>
@@ -33,10 +33,11 @@ defmodule BooksWeb.BoxLive.Form do
      |> apply_action(socket.assigns.live_action, params)}
   end
 
-  defp return_to("show"), do: "show"
-  defp return_to(_), do: "index"
+  defp return_to("box"), do: "box"
+  defp return_to("library"), do: "library"
+  defp return_to(_), do: "box"
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(socket, :edit, %{"box_id" => id}) do
     box = Boxes.get_box!(id)
 
     socket
@@ -78,7 +79,6 @@ defmodule BooksWeb.BoxLive.Form do
   end
 
   defp save_box(socket, :new, box_params) do
-    # Add library_id to box_params
     box_params_with_library = Map.put(box_params, "library_id", socket.assigns.library_id)
 
     case Boxes.create_box(box_params_with_library) do
@@ -93,6 +93,6 @@ defmodule BooksWeb.BoxLive.Form do
     end
   end
 
-  defp return_path("index", _box, library_id), do: ~p"/libraries/#{library_id}/boxes"
-  defp return_path("show", box, library_id), do: ~p"/libraries/#{library_id}/boxes/#{box}"
+  defp return_path("library", _box, library_id), do: ~p"/libraries/#{library_id}"
+  defp return_path("box", box, library_id), do: ~p"/libraries/#{library_id}/boxes/#{box}"
 end

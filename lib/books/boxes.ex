@@ -18,7 +18,7 @@ defmodule Books.Boxes do
 
   """
   def list_boxes(library_id) do
-    Repo.all(from b in Box, where: b.library_id == ^library_id)
+    Repo.all(from b in Box, where: b.library_id == ^library_id, order_by: b.name)
   end
 
   @doc """
