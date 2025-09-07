@@ -25,6 +25,7 @@ if config_env() == :prod do
     adapter: Ecto.Adapters.SQLite3,
     database: System.get_env("SQLITE_DB_PATH") || "prod.sqlite3",
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    journal_mode: :delete,
     create_if_not_exists: false
 
   # The secret key base is used to sign/encrypt cookies and other secrets.

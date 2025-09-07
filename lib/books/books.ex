@@ -29,6 +29,26 @@ defmodule Books.Books do
   end
 
   @doc """
+  Search books by name or author within a library.
+
+  ## Examples
+
+      iex> search_books(library_id, "tolkien")
+      [%Book{}, ...]
+
+  """
+  def search_books(library_id, search_term) do
+    search_pattern = "%#{search_term}%"
+
+    Repo.all(
+      from b in Book,
+      where: b.library_id == ^library_id and
+             (like(b.name, ^search_pattern) or like(b.author, ^search_pattern)),
+      order_by: b.number
+    )
+  end
+
+  @doc """
   Gets a single book.
 
   Raises `Ecto.NoResultsError` if the Book does not exist.

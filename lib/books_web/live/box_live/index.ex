@@ -27,7 +27,9 @@ defmodule BooksWeb.BoxLive.Index do
           <div class="sr-only">
             <.link navigate={~p"/libraries/#{@library_id}/boxes/#{box}"}>Show</.link>
           </div>
-          <.link navigate={~p"/libraries/#{@library_id}/boxes/#{box}/edit?return_to=library"}>Edit</.link>
+          <.link navigate={~p"/libraries/#{@library_id}/boxes/#{box}/edit?return_to=library"}>
+            Edit
+          </.link>
         </:action>
         <:action :let={{id, box}}>
           <.link
@@ -41,7 +43,17 @@ defmodule BooksWeb.BoxLive.Index do
 
       <div class="my-16"></div>
       <.header>
-        Books without a box
+        Books
+        <form id="search-form" phx-debounce="300" phx-change="search">
+          <.input
+            type="search"
+            id="search"
+            name="search"
+            value={@search}
+            placeholder="Search books..."
+            class="input min-w-sm"
+          />
+        </form>
         <:actions>
           <.button variant="primary" navigate={~p"/libraries/#{@library_id}/books/new"}>
             <.icon name="hero-plus" /> New Book
@@ -64,8 +76,26 @@ defmodule BooksWeb.BoxLive.Index do
      socket
      |> assign(:page_title, "Listing Boxes")
      |> assign(:library_id, library_id)
+     |> assign(:search, "")
      |> stream(:boxes, Boxes.list_boxes(library_id))
-     |> stream(:books, Books.list_books(library_id, :nil))}
+     |> stream(:books, Books.list_books(library_id, nil))}
+  end
+
+  @impl true
+  def handle_event("search", %{"search" => search_term}, socket) do
+    library_id = socket.assigns.library_id
+
+    filtered_books =
+      if search_term == "" do
+        Books.list_books(library_id, nil)
+      else
+        Books.search_books(library_id, search_term)
+      end
+
+    {:noreply,
+     socket
+     |> assign(:search, search_term)
+     |> stream(:books, filtered_books, reset: true)}
   end
 
   @impl true

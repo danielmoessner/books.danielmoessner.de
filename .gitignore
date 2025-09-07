@@ -39,3 +39,4 @@ npm-debug.log
 .elixir_ls/
 *.sqlite3*
 import_books.exs
+.DS_Store
