@@ -23,6 +23,7 @@ defmodule BooksWeb.BoxLive.Index do
         row_click={fn {_id, box} -> JS.navigate(~p"/libraries/#{@library_id}/boxes/#{box}") end}
       >
         <:col :let={{_id, box}} label="Name">{box.name}</:col>
+        <:col :let={{_id, box}} label="Books">{Map.get(@book_counts, box.id, 0)}</:col>
         <:action :let={{_id, box}}>
           <div class="sr-only">
             <.link navigate={~p"/libraries/#{@library_id}/boxes/#{box}"}>Show</.link>
@@ -72,13 +73,18 @@ defmodule BooksWeb.BoxLive.Index do
 
   @impl true
   def mount(%{"library_id" => library_id}, _session, socket) do
+    boxes = Boxes.list_boxes(library_id)
+    box_ids = Enum.map(boxes, & &1.id)
+    book_counts = Books.get_book_counts_for_boxes(box_ids)
+
     {:ok,
      socket
      |> assign(:page_title, "Listing Boxes")
      |> assign(:library_id, library_id)
      |> assign(:search, "")
-     |> stream(:boxes, Boxes.list_boxes(library_id))
-     |> stream(:books, Books.list_books(library_id, nil))}
+     |> assign(:book_counts, book_counts)
+     |> stream(:boxes, boxes)
+     |> stream(:books, Books.list_books(library_id))}
   end
 
   @impl true
@@ -87,7 +93,7 @@ defmodule BooksWeb.BoxLive.Index do
 
     filtered_books =
       if search_term == "" do
-        Books.list_books(library_id, nil)
+        Books.list_books(library_id)
       else
         Books.search_books(library_id, search_term)
       end
@@ -111,6 +117,17 @@ defmodule BooksWeb.BoxLive.Index do
     book = Books.get_book!(id)
     {:ok, _} = Books.delete_book(book)
 
-    {:noreply, stream_delete(socket, :books, book)}
+    # Update book counts if the deleted book was in a box
+    updated_book_counts = if book.box_id do
+      current_count = Map.get(socket.assigns.book_counts, book.box_id, 0)
+      Map.put(socket.assigns.book_counts, book.box_id, max(0, current_count - 1))
+    else
+      socket.assigns.book_counts
+    end
+
+    {:noreply,
+     socket
+     |> assign(:book_counts, updated_book_counts)
+     |> stream_delete(:books, book)}
   end
 end

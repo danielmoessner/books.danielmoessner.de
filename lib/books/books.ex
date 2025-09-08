@@ -18,7 +18,7 @@ defmodule Books.Books do
 
   """
   def list_books(library_id) do
-    Repo.all(from b in Book, where: b.library_id == ^library_id)
+    Repo.all(from b in Book, where: b.library_id == ^library_id, order_by: b.number)
   end
   def list_books(library_id, box_id) do
     if box_id == :nil do
@@ -127,5 +127,26 @@ defmodule Books.Books do
   """
   def change_book(%Book{} = book, attrs \\ %{}) do
     Book.changeset(book, attrs)
+  end
+
+  @doc """
+  Get book counts for multiple boxes.
+
+  ## Examples
+
+      iex> get_book_counts_for_boxes([box_id1, box_id2])
+      %{box_id1 => 3, box_id2 => 5}
+
+  """
+  def get_book_counts_for_boxes(box_ids) when is_list(box_ids) do
+    box_ids
+    |> Enum.map(fn box_id ->
+      count = Repo.aggregate(
+        from(b in Book, where: b.box_id == ^box_id),
+        :count
+      )
+      {box_id, count}
+    end)
+    |> Enum.into(%{})
   end
 end
