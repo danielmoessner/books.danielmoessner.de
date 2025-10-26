@@ -36,6 +36,7 @@ defmodule BooksWeb.BoxLive.Show do
         box_id={@box.id}
         on_delete="delete"
         return_to="box"
+        sortable={true}
       />
     </Layouts.app>
     """
@@ -57,5 +58,32 @@ defmodule BooksWeb.BoxLive.Show do
     {:ok, _} = Books.delete_book(book)
 
     {:noreply, stream_delete(socket, :books, book)}
+  end
+
+  @impl true
+  def handle_event("reposition", %{"id" => id, "old" => oldIndex, "new" => newIndex}, socket) do
+    books = Books.list_books(socket.assigns.library_id, socket.assigns.box.id)
+
+    min_number = books |> Enum.map(& &1.number) |> Enum.min() || 0
+    oldIndexNumber = oldIndex
+    newIndexNumber = newIndex
+    book_to_move = Enum.at(books, oldIndexNumber)
+
+    books =
+      books
+      |> Enum.sort_by(& &1.number)
+      |> List.delete_at(oldIndexNumber)
+      |> List.insert_at(newIndexNumber, book_to_move)
+      |> Enum.with_index(min_number)
+      |> Enum.map(fn {book, index} ->
+        if book.number != index do
+          {:ok, _} = Books.update_book(book, %{number: index})
+          %{book | number: index}
+        else
+          book
+        end
+      end)
+
+    {:noreply, stream(socket, :books, books, reset: true)}
   end
 end

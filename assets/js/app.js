@@ -24,6 +24,25 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/books"
 import topbar from "../vendor/topbar"
+import Sortable from "../vendor/sortable"
+
+colocatedHooks.Sortable = {
+  mounted(){
+    let sorter = new Sortable(this.el, {
+      animation: 150,
+      delay: 0,
+      dragClass: "drag-item",
+      ghostClass: "drag-ghost",
+      forceFallback: true,
+      handle: ".drag-handle", // Only allow dragging from elements with this class
+      onEnd: e => {
+        console.log("Sortable.onEnd", e)
+        let params = {old: e.oldIndex, new: e.newIndex, ...e.item.dataset}
+        this.pushEventTo(this.el, "reposition", params)
+      }
+    })
+  }
+}
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {

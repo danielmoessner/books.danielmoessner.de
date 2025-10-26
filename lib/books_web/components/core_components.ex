@@ -320,6 +320,7 @@ defmodule BooksWeb.CoreComponents do
   attr :rows, :list, required: true
   attr :row_id, :any, default: nil, doc: "the function for generating the row id"
   attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
+  attr :sortable, :boolean, default: false, doc: "whether the table rows are sortable"
 
   attr :row_item, :any,
     default: &Function.identity/1,
@@ -341,14 +342,27 @@ defmodule BooksWeb.CoreComponents do
     <table class="table table-zebra">
       <thead>
         <tr>
+          <th :if={@sortable} class="w-0"></th>
           <th :for={col <- @col}>{col[:label]}</th>
           <th :if={@action != []}>
             <span class="sr-only">Actions</span>
           </th>
         </tr>
       </thead>
-      <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
-        <tr :for={row <- @rows} id={@row_id && @row_id.(row)}>
+      <tbody
+        phx-hook={@sortable && "Sortable"}
+        data-list_id={@id}
+        id={@id}
+        phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}
+      >
+        <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-id={@row_id && @row_id.(row)}>
+          <td :if={@sortable}>
+            <button type="button" class="drag-handle cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </button>
+          </td>
           <td
             :for={col <- @col}
             phx-click={@row_click && @row_click.(row)}
@@ -480,12 +494,15 @@ defmodule BooksWeb.CoreComponents do
   attr :box_id, :string, required: false, doc: "the box ID for navigation"
   attr :on_delete, :string, default: "delete", doc: "the event name for delete action"
   attr :return_to, :string, default: "box", doc: "where to return after edit"
+  attr :sortable, :boolean, default: false, doc: "whether the table rows are sortable"
 
   def book_table(assigns) do
     ~H"""
     <.table
       id="books"
       rows={@books}
+      sortable={@sortable}
+      row_id={fn {_id, book} -> book.id end}
       row_click={fn {_id, book} -> JS.navigate(~p"/libraries/#{assigns.library_id}/books/#{book}") end}
     >
       <:col :let={{_id, book}} label="Book">{book.number}</:col>
