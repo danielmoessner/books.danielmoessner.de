@@ -61,7 +61,7 @@ defmodule BooksWeb.BoxLive.Show do
   end
 
   @impl true
-  def handle_event("reposition", %{"id" => id, "old" => oldIndex, "new" => newIndex}, socket) do
+  def handle_event("reposition", %{"id" => _id, "old" => oldIndex, "new" => newIndex}, socket) do
     books = Books.list_books(socket.assigns.library_id, socket.assigns.box.id)
 
     min_number = books |> Enum.map(& &1.number) |> Enum.min() || 0
