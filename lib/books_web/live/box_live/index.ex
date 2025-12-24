@@ -45,7 +45,7 @@ defmodule BooksWeb.BoxLive.Index do
       <div class="my-16"></div>
       <.header>
         Books
-        <form id="search-form" phx-debounce="300" phx-change="search">
+        <form id="search-form" phx-debounce="300" phx-change="search" phx-submit="noop">
           <.input
             type="search"
             id="search"
@@ -130,4 +130,7 @@ defmodule BooksWeb.BoxLive.Index do
      |> assign(:book_counts, updated_book_counts)
      |> stream_delete(:books, book)}
   end
+
+  @impl true
+  def handle_event("noop", _params, socket), do: {:noreply, socket}
 end

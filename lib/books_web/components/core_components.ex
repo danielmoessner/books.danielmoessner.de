@@ -502,7 +502,7 @@ defmodule BooksWeb.CoreComponents do
       id="books"
       rows={@books}
       sortable={@sortable}
-      row_id={fn {_id, book} -> book.id end}
+      row_id={fn {id, _book} -> id end}
       row_click={fn {_id, book} -> JS.navigate(~p"/libraries/#{assigns.library_id}/books/#{book}") end}
     >
       <:col :let={{_id, book}} label="Book">{book.number}</:col>
