@@ -1,0 +1,112 @@
+---
+- name: Deploy (Docker Compose)
+  hosts: app
+  become: true
+
+  tasks:
+    - name: Determine image to deploy (explicit)
+      set_fact:
+        app_image_effective: "{{ app_image }}"
+      when: app_image is defined and app_image | length > 0
+
+    - name: Determine image to deploy (default to current git SHA / GITHUB_SHA)
+      set_fact:
+        app_image_effective: "{{ app_image_repo }}:sha-{{ lookup('env', 'GITHUB_SHA') | default(lookup('pipe', 'git rev-parse HEAD'), true) }}"
+      when: app_image is not defined or app_image | length == 0
+
+    - name: Ensure project directory exists
+      file:
+        path: "{{ app_remote_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Ensure production SQLite DB file exists on the host
+      file:
+        path: "{{ app_sqlite_host_path }}"
+        state: touch
+        owner: root
+        group: www-data
+        mode: "0660"
+
+    - name: Install docker-compose.yml
+      copy:
+        src: "{{ playbook_dir }}/../docker-compose.yml"
+        dest: "{{ app_remote_dir }}/docker-compose.yml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Check env file exists (manual step)
+      stat:
+        path: "{{ app_env_file }}"
+      register: env_file_stat
+
+    - name: Abort if env file is missing
+      fail:
+        msg: >-
+          Missing {{ app_env_file }}. Create it on the server before deploying.
+          Required: SECRET_KEY_BASE=... (generate via `mix phx.gen.secret`).
+          Optional: PHX_HOST={{ app_domain }}, POOL_SIZE=10, etc.
+      when: not env_file_stat.stat.exists
+
+    - name: Ensure env file permissions are locked down
+      file:
+        path: "{{ app_env_file }}"
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Pull image
+      command: docker compose pull
+      args:
+        chdir: "{{ app_remote_dir }}"
+      environment:
+        APP_IMAGE: "{{ app_image_effective }}"
+        APP_SQLITE_PATH: "{{ app_sqlite_host_path }}"
+        APP_ENV_FILE: "{{ app_env_file }}"
+        APP_BIND_IP: "{{ app_bind_ip }}"
+        APP_PORT: "{{ app_port }}"
+        PHX_HOST: "{{ app_domain }}"
+
+    - name: Stop web service (avoid concurrent DB writes during migrate)
+      command: docker compose stop web
+      args:
+        chdir: "{{ app_remote_dir }}"
+      failed_when: false
+
+    - name: Migrate database (Ecto)
+      command: >-
+        docker compose run --rm --no-deps web
+        /app/_build/prod/rel/books/bin/books eval Books.Release.migrate()
+      args:
+        chdir: "{{ app_remote_dir }}"
+      environment:
+        APP_IMAGE: "{{ app_image_effective }}"
+        APP_SQLITE_PATH: "{{ app_sqlite_host_path }}"
+        APP_ENV_FILE: "{{ app_env_file }}"
+        APP_BIND_IP: "{{ app_bind_ip }}"
+        APP_PORT: "{{ app_port }}"
+        PHX_HOST: "{{ app_domain }}"
+
+    - name: Start/update services
+      command: docker compose up -d --remove-orphans
+      args:
+        chdir: "{{ app_remote_dir }}"
+      environment:
+        APP_IMAGE: "{{ app_image_effective }}"
+        APP_SQLITE_PATH: "{{ app_sqlite_host_path }}"
+        APP_ENV_FILE: "{{ app_env_file }}"
+        APP_BIND_IP: "{{ app_bind_ip }}"
+        APP_PORT: "{{ app_port }}"
+        PHX_HOST: "{{ app_domain }}"
+
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: Done
+      debug:
+        msg: "OK: deployed {{ app_image_effective }}"

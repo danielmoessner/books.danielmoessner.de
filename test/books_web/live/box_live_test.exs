@@ -4,6 +4,9 @@ defmodule BooksWeb.BoxLiveTest do
   import Phoenix.LiveViewTest
   import Books.BoxesFixtures
 
+  alias Books.Repo
+  alias Books.Library
+
   @create_attrs %{name: "some name"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
@@ -17,20 +20,22 @@ defmodule BooksWeb.BoxLiveTest do
     setup [:create_box]
 
     test "lists all boxes", %{conn: conn, box: box} do
-      {:ok, _index_live, html} = live(conn, ~p"/boxes")
+      {:ok, _index_live, html} = live(conn, ~p"/libraries/#{box.library_id}")
 
       assert html =~ "Listing Boxes"
       assert html =~ box.name
     end
 
     test "saves new box", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/boxes")
+      library = Repo.insert!(%Library{})
+
+      {:ok, index_live, _html} = live(conn, ~p"/libraries/#{library.id}")
 
       assert {:ok, form_live, _} =
                index_live
                |> element("a", "New Box")
                |> render_click()
-               |> follow_redirect(conn, ~p"/boxes/new")
+               |> follow_redirect(conn, ~p"/libraries/#{library.id}/boxes/new")
 
       assert render(form_live) =~ "New Box"
 
@@ -42,7 +47,7 @@ defmodule BooksWeb.BoxLiveTest do
                form_live
                |> form("#box-form", box: @create_attrs)
                |> render_submit()
-               |> follow_redirect(conn, ~p"/boxes")
+               |> follow_redirect(conn)
 
       html = render(index_live)
       assert html =~ "Box created successfully"
@@ -50,13 +55,16 @@ defmodule BooksWeb.BoxLiveTest do
     end
 
     test "updates box in listing", %{conn: conn, box: box} do
-      {:ok, index_live, _html} = live(conn, ~p"/boxes")
+      {:ok, index_live, _html} = live(conn, ~p"/libraries/#{box.library_id}")
 
       assert {:ok, form_live, _html} =
                index_live
                |> element("#boxes-#{box.id} a", "Edit")
                |> render_click()
-               |> follow_redirect(conn, ~p"/boxes/#{box}/edit")
+               |> follow_redirect(
+                 conn,
+                 ~p"/libraries/#{box.library_id}/boxes/#{box}/edit?return_to=library"
+               )
 
       assert render(form_live) =~ "Edit Box"
 
@@ -68,7 +76,7 @@ defmodule BooksWeb.BoxLiveTest do
                form_live
                |> form("#box-form", box: @update_attrs)
                |> render_submit()
-               |> follow_redirect(conn, ~p"/boxes")
+               |> follow_redirect(conn, ~p"/libraries/#{box.library_id}")
 
       html = render(index_live)
       assert html =~ "Box updated successfully"
@@ -76,7 +84,7 @@ defmodule BooksWeb.BoxLiveTest do
     end
 
     test "deletes box in listing", %{conn: conn, box: box} do
-      {:ok, index_live, _html} = live(conn, ~p"/boxes")
+      {:ok, index_live, _html} = live(conn, ~p"/libraries/#{box.library_id}")
 
       assert index_live |> element("#boxes-#{box.id} a", "Delete") |> render_click()
       refute has_element?(index_live, "#boxes-#{box.id}")
@@ -87,20 +95,22 @@ defmodule BooksWeb.BoxLiveTest do
     setup [:create_box]
 
     test "displays box", %{conn: conn, box: box} do
-      {:ok, _show_live, html} = live(conn, ~p"/boxes/#{box}")
+      {:ok, _show_live, html} = live(conn, ~p"/libraries/#{box.library_id}/boxes/#{box}")
 
-      assert html =~ "Show Box"
       assert html =~ box.name
     end
 
     test "updates box and returns to show", %{conn: conn, box: box} do
-      {:ok, show_live, _html} = live(conn, ~p"/boxes/#{box}")
+      {:ok, show_live, _html} = live(conn, ~p"/libraries/#{box.library_id}/boxes/#{box}")
 
       assert {:ok, form_live, _} =
                show_live
-               |> element("a", "Edit")
+               |> element("a", "Edit Box")
                |> render_click()
-               |> follow_redirect(conn, ~p"/boxes/#{box}/edit?return_to=show")
+               |> follow_redirect(
+                 conn,
+                 ~p"/libraries/#{box.library_id}/boxes/#{box}/edit?return_to=box"
+               )
 
       assert render(form_live) =~ "Edit Box"
 
@@ -112,7 +122,7 @@ defmodule BooksWeb.BoxLiveTest do
                form_live
                |> form("#box-form", box: @update_attrs)
                |> render_submit()
-               |> follow_redirect(conn, ~p"/boxes/#{box}")
+               |> follow_redirect(conn, ~p"/libraries/#{box.library_id}/boxes/#{box}")
 
       html = render(show_live)
       assert html =~ "Box updated successfully"

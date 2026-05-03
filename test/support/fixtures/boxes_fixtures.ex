@@ -8,10 +8,16 @@ defmodule Books.BoxesFixtures do
   Generate a box.
   """
   def box_fixture(attrs \\ %{}) do
+    library_id =
+      Map.get(attrs, :library_id) ||
+        Map.get(attrs, "library_id") ||
+        Books.Repo.insert!(%Books.Library{}).id
+
     {:ok, box} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "some name",
+        library_id: library_id
       })
       |> Books.Boxes.create_box()
 

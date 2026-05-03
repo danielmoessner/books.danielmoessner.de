@@ -4,7 +4,7 @@ defmodule Books.BoxesTest do
   alias Books.Boxes
 
   describe "boxes" do
-    alias Books.Boxes.Box
+    alias Books.Box
 
     import Books.BoxesFixtures
 
@@ -12,7 +12,7 @@ defmodule Books.BoxesTest do
 
     test "list_boxes/0 returns all boxes" do
       box = box_fixture()
-      assert Boxes.list_boxes() == [box]
+      assert Boxes.list_boxes(box.library_id) == [box]
     end
 
     test "get_box!/1 returns the box with given id" do
@@ -21,7 +21,8 @@ defmodule Books.BoxesTest do
     end
 
     test "create_box/1 with valid data creates a box" do
-      valid_attrs = %{name: "some name"}
+      library = Repo.insert!(%Books.Library{})
+      valid_attrs = %{name: "some name", library_id: library.id}
 
       assert {:ok, %Box{} = box} = Boxes.create_box(valid_attrs)
       assert box.name == "some name"

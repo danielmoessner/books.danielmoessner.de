@@ -1,0 +1,26 @@
+app_remote_dir: /home/books.danielmoessner.de
+
+app_data_dir: /home/books.danielmoessner.de/tmp
+
+# Persistent production SQLite database on the host.
+# This file is bind-mounted into the container at /app/prod.sqlite3.
+app_sqlite_host_path: /home/books.danielmoessner.de/books.sqlite3
+
+# Environment file on the server (manual; contains SECRET_KEY_BASE, etc.)
+app_env_file: /home/books.danielmoessner.de/books.env
+
+app_bind_ip: 127.0.0.1
+
+app_port: 8060
+
+app_domain: books.danielmoessner.de
+
+app_nginx_site_name: books.danielmoessner.de
+
+app_client_max_body_size: 50m
+
+app_domain_aliases: []
+
+app_certbot_webroot: /var/www/certbot
+
+app_image_repo: ghcr.io/danielmoessner/books.danielmoessner.de
