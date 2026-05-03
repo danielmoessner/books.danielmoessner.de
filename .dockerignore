@@ -1,0 +1,34 @@
+# Keep git/editor metadata out of the build context
+.git
+.github
+.vscode
+.elixir_ls
+.DS_Store
+
+# Mix / build artifacts (built inside the container)
+_build
+cover
+deps
+doc
+tmp
+
+# Generated static assets (Dockerfile builds these)
+priv/static/assets
+priv/static/cache_manifest.json
+
+# Local databases / dumps (never bake local data into images)
+*.sqlite3*
+*.db
+erl_crash.dump
+*.dump
+
+# Logs
+*.log
+npm-debug.log
+
+# Local scripts and one-off files
+captain-definition
+import_books.exs
+pull.sh
+push.sh
+run.sh
