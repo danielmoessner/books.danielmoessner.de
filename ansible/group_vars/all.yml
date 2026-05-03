@@ -1,13 +1,8 @@
 app_remote_dir: /home/books.danielmoessner.de
 
-app_data_dir: /home/books.danielmoessner.de/tmp
+app_sqlite_host_path: "{{ app_remote_dir }}/books.sqlite3"
 
-# Persistent production SQLite database on the host.
-# This file is bind-mounted into the container at /app/prod.sqlite3.
-app_sqlite_host_path: /home/books.danielmoessner.de/books.sqlite3
-
-# Environment file on the server (manual; contains SECRET_KEY_BASE, etc.)
-app_env_file: /home/books.danielmoessner.de/books.env
+app_env_file: "{{ app_remote_dir }}/books.env"
 
 app_bind_ip: 127.0.0.1
 
