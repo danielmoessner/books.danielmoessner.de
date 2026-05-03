@@ -358,8 +358,19 @@ defmodule BooksWeb.CoreComponents do
         <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-id={@row_id && @row_id.(row)}>
           <td :if={@sortable}>
             <button type="button" class="drag-handle cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
               </svg>
             </button>
           </td>
@@ -503,7 +514,9 @@ defmodule BooksWeb.CoreComponents do
       rows={@books}
       sortable={@sortable}
       row_id={fn {id, _book} -> id end}
-      row_click={fn {_id, book} -> JS.navigate(~p"/libraries/#{assigns.library_id}/books/#{book}") end}
+      row_click={
+        fn {_id, book} -> JS.navigate(~p"/libraries/#{assigns.library_id}/books/#{book}") end
+      }
     >
       <:col :let={{_id, book}} label="Book">{book.number}</:col>
       <:col :let={{_id, book}} label="Name">{book.name}</:col>
@@ -512,7 +525,9 @@ defmodule BooksWeb.CoreComponents do
         <div class="sr-only">
           <.link navigate={~p"/libraries/#{@library_id}/books/#{book}"}>Show</.link>
         </div>
-        <.link navigate={~p"/libraries/#{@library_id}/books/#{book}/edit?return_to=#{@return_to}"}>Edit</.link>
+        <.link navigate={~p"/libraries/#{@library_id}/books/#{book}/edit?return_to=#{@return_to}"}>
+          Edit
+        </.link>
       </:action>
       <:action :let={{id, book}}>
         <.link

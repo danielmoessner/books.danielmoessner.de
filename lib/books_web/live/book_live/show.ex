@@ -11,7 +11,11 @@ defmodule BooksWeb.BookLive.Show do
         {@book.number} - {@book.name}
         <:subtitle>by {@book.author}</:subtitle>
         <:actions>
-          <.button navigate={if @book.box_id, do: ~p"/libraries/#{@library_id}/boxes/#{@book.box_id}", else: ~p"/libraries/#{@library_id}"}>
+          <.button navigate={
+            if @book.box_id,
+              do: ~p"/libraries/#{@library_id}/boxes/#{@book.box_id}",
+              else: ~p"/libraries/#{@library_id}"
+          }>
             <.icon name="hero-arrow-left" />
           </.button>
           <.button
@@ -28,7 +32,6 @@ defmodule BooksWeb.BookLive.Show do
         <:item title="Name">{@book.name}</:item>
         <:item title="Author">{@book.author}</:item>
       </.list>
-
     </Layouts.app>
     """
   end

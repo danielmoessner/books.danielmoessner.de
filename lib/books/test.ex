@@ -5,8 +5,6 @@ defmodule Books.Test do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "test" do
-
-
     timestamps(type: :utc_datetime)
   end
 

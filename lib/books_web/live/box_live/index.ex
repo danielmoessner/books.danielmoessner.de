@@ -118,12 +118,13 @@ defmodule BooksWeb.BoxLive.Index do
     {:ok, _} = Books.delete_book(book)
 
     # Update book counts if the deleted book was in a box
-    updated_book_counts = if book.box_id do
-      current_count = Map.get(socket.assigns.book_counts, book.box_id, 0)
-      Map.put(socket.assigns.book_counts, book.box_id, max(0, current_count - 1))
-    else
-      socket.assigns.book_counts
-    end
+    updated_book_counts =
+      if book.box_id do
+        current_count = Map.get(socket.assigns.book_counts, book.box_id, 0)
+        Map.put(socket.assigns.book_counts, book.box_id, max(0, current_count - 1))
+      else
+        socket.assigns.book_counts
+      end
 
     {:noreply,
      socket

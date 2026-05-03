@@ -16,6 +16,11 @@ tmp
 priv/static/assets
 priv/static/cache_manifest.json
 
+# Non-prod configs (not needed for the production image)
+config/dev.exs
+config/test.exs
+config/*.secret.exs
+
 # Local databases / dumps (never bake local data into images)
 *.sqlite3*
 *.db

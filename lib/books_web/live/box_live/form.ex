@@ -71,7 +71,9 @@ defmodule BooksWeb.BoxLive.Form do
         {:noreply,
          socket
          |> put_flash(:info, "Box updated successfully")
-         |> push_navigate(to: return_path(socket.assigns.return_to, box, socket.assigns.library_id))}
+         |> push_navigate(
+           to: return_path(socket.assigns.return_to, box, socket.assigns.library_id)
+         )}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -86,7 +88,9 @@ defmodule BooksWeb.BoxLive.Form do
         {:noreply,
          socket
          |> put_flash(:info, "Box created successfully")
-         |> push_navigate(to: return_path(socket.assigns.return_to, box, socket.assigns.library_id))}
+         |> push_navigate(
+           to: return_path(socket.assigns.return_to, box, socket.assigns.library_id)
+         )}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}

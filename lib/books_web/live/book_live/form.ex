@@ -19,7 +19,9 @@ defmodule BooksWeb.BookLive.Form do
         <.input field={@form[:author]} type="text" label="Author" />
         <footer>
           <.button phx-disable-with="Saving..." variant="primary">Save Book</.button>
-          <.button navigate={return_path(@return_to, @library_id, @book.box_id, @book.id)}>Cancel</.button>
+          <.button navigate={return_path(@return_to, @library_id, @book.box_id, @book.id)}>
+            Cancel
+          </.button>
         </footer>
       </.form>
     </Layouts.app>
@@ -79,7 +81,15 @@ defmodule BooksWeb.BookLive.Form do
         {:noreply,
          socket
          |> put_flash(:info, "Book updated successfully")
-         |> push_navigate(to: return_path(socket.assigns.return_to, socket.assigns.library_id, book.box_id, book.id))}
+         |> push_navigate(
+           to:
+             return_path(
+               socket.assigns.return_to,
+               socket.assigns.library_id,
+               book.box_id,
+               book.id
+             )
+         )}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -102,8 +112,14 @@ defmodule BooksWeb.BookLive.Form do
   end
 
   defp return_path("book", library_id, _box_id, nil), do: ~p"/libraries/#{library_id}"
-  defp return_path("book", library_id, _box_id, book_id), do: ~p"/libraries/#{library_id}/books/#{book_id}"
+
+  defp return_path("book", library_id, _box_id, book_id),
+    do: ~p"/libraries/#{library_id}/books/#{book_id}"
+
   defp return_path("box", library_id, nil, _book_id), do: ~p"/libraries/#{library_id}"
-  defp return_path("box", library_id, box_id, _book_id), do: ~p"/libraries/#{library_id}/boxes/#{box_id}"
+
+  defp return_path("box", library_id, box_id, _book_id),
+    do: ~p"/libraries/#{library_id}/boxes/#{box_id}"
+
   defp return_path("library", library_id, _box_id, _book_id), do: ~p"/libraries/#{library_id}"
 end

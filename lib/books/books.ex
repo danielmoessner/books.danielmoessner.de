@@ -1,5 +1,5 @@
 defmodule Books.Books do
- @moduledoc """
+  @moduledoc """
   The Books context.
   """
 
@@ -20,11 +20,20 @@ defmodule Books.Books do
   def list_books(library_id) do
     Repo.all(from b in Book, where: b.library_id == ^library_id, order_by: b.number)
   end
+
   def list_books(library_id, box_id) do
-    if box_id == :nil do
-      Repo.all(from b in Book, where: b.library_id == ^library_id and is_nil(b.box_id), order_by: b.number)
+    if box_id == nil do
+      Repo.all(
+        from b in Book,
+          where: b.library_id == ^library_id and is_nil(b.box_id),
+          order_by: b.number
+      )
     else
-      Repo.all(from b in Book, where: b.library_id == ^library_id and b.box_id == ^box_id, order_by: b.number)
+      Repo.all(
+        from b in Book,
+          where: b.library_id == ^library_id and b.box_id == ^box_id,
+          order_by: b.number
+      )
     end
   end
 
@@ -42,9 +51,10 @@ defmodule Books.Books do
 
     Repo.all(
       from b in Book,
-      where: b.library_id == ^library_id and
-             (like(b.name, ^search_pattern) or like(b.author, ^search_pattern)),
-      order_by: b.number
+        where:
+          b.library_id == ^library_id and
+            (like(b.name, ^search_pattern) or like(b.author, ^search_pattern)),
+        order_by: b.number
     )
   end
 
@@ -141,10 +151,12 @@ defmodule Books.Books do
   def get_book_counts_for_boxes(box_ids) when is_list(box_ids) do
     box_ids
     |> Enum.map(fn box_id ->
-      count = Repo.aggregate(
-        from(b in Book, where: b.box_id == ^box_id),
-        :count
-      )
+      count =
+        Repo.aggregate(
+          from(b in Book, where: b.box_id == ^box_id),
+          :count
+        )
+
       {box_id, count}
     end)
     |> Enum.into(%{})

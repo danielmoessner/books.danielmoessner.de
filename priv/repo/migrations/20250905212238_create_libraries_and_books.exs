@@ -12,7 +12,10 @@ defmodule Books.Repo.Migrations.CreateLibrariesAndBooks do
       add :name, :string, null: false
       add :author, :string, null: false
       add :number, :integer, null: false
-      add :library_id, references(:libraries, type: :binary_id, on_delete: :delete_all), null: false
+
+      add :library_id, references(:libraries, type: :binary_id, on_delete: :delete_all),
+        null: false
+
       timestamps()
     end
 

@@ -28,5 +28,10 @@ books = [
 ]
 
 for attrs <- books do
-  Repo.insert!(%Book{library_id: library.id, name: attrs.name, author: attrs.author, number: attrs.number})
+  Repo.insert!(%Book{
+    library_id: library.id,
+    name: attrs.name,
+    author: attrs.author,
+    number: attrs.number
+  })
 end
