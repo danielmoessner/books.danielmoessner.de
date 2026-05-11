@@ -7,6 +7,11 @@ This folder provisions a Debian server and deploys the app via Docker Compose.
 - `books.env` is **manual** (not managed by Ansible) and contains runtime secrets like `SECRET_KEY_BASE`.
 - Production SQLite is persisted on the host at `/home/books.danielmoessner.de/books.sqlite3`.
 
+SQLite note:
+
+- The container uses `SQLITE_DB_PATH=/data/prod.sqlite3` (see `docker-compose.yml`).
+- SQLite must be able to create/delete journal files next to the DB file; storing the DB under `/data` avoids permission issues when the container runs as a non-root user.
+
 ## Prereqs
 
 On your machine:

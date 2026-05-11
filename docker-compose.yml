@@ -10,9 +10,9 @@ services:
       PHX_SERVER: "true"
       PHX_HOST: ${PHX_HOST:-books.danielmoessner.de}
       PORT: "4000"
-      SQLITE_DB_PATH: "/app/prod.sqlite3"
+      SQLITE_DB_PATH: "/data/prod.sqlite3"
     ports:
       - "${APP_BIND_IP:-127.0.0.1}:${APP_PORT:-8060}:4000"
     command: /app/_build/prod/rel/books/bin/books start
     volumes:
-      - ${APP_SQLITE_PATH:-/home/books.danielmoessner.de/books.sqlite3}:/app/prod.sqlite3
+      - ${APP_SQLITE_PATH:-/home/books.danielmoessner.de/books.sqlite3}:/data/prod.sqlite3
