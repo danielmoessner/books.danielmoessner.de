@@ -46,7 +46,13 @@ defmodule BooksWeb.BoxLive.Index do
       <div class="my-16"></div>
       <.header>
         Books
-        <form id="search-form" phx-debounce="300" phx-change="search" phx-submit="noop">
+        <form
+          id="search-form"
+          class="group"
+          phx-debounce="300"
+          phx-change="search"
+          phx-submit="noop"
+        >
           <.input
             type="search"
             id="search"
@@ -55,6 +61,9 @@ defmodule BooksWeb.BoxLive.Index do
             placeholder="Search books..."
             class="input min-w-sm"
           />
+          <span class="hidden text-sm text-base-content/70 group-[.phx-change-loading]:inline">
+            Loading...
+          </span>
         </form>
         <:actions>
           <.button variant="primary" navigate={~p"/libraries/#{@library_id}/books/new"}>
