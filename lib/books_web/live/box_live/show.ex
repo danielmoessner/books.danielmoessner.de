@@ -23,7 +23,7 @@ defmodule BooksWeb.BoxLive.Show do
           </.button>
           <.button
             variant="primary"
-            navigate={~p"/libraries/#{@library_id}/books/new?return_to=box"}
+            navigate={~p"/libraries/#{@library_id}/books/new?return_to=box&box_id=#{@box.id}"}
           >
             <.icon name="hero-plus" /> Add Book
           </.button>
@@ -64,7 +64,6 @@ defmodule BooksWeb.BoxLive.Show do
   def handle_event("reposition", %{"id" => _id, "old" => oldIndex, "new" => newIndex}, socket) do
     books = Books.list_books(socket.assigns.library_id, socket.assigns.box.id)
 
-    min_number = books |> Enum.map(& &1.number) |> Enum.min() || 0
     oldIndexNumber = oldIndex
     newIndexNumber = newIndex
     book_to_move = Enum.at(books, oldIndexNumber)
@@ -74,7 +73,7 @@ defmodule BooksWeb.BoxLive.Show do
       |> Enum.sort_by(& &1.number)
       |> List.delete_at(oldIndexNumber)
       |> List.insert_at(newIndexNumber, book_to_move)
-      |> Enum.with_index(min_number)
+      |> Enum.with_index()
       |> Enum.map(fn {book, index} ->
         if book.number != index do
           {:ok, _} = Books.update_book(book, %{number: index})

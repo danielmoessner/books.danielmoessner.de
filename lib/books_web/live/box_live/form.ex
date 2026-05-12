@@ -15,6 +15,7 @@ defmodule BooksWeb.BoxLive.Form do
 
       <.form for={@form} id="box-form" phx-change="validate" phx-submit="save">
         <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:start_number]} type="number" label="Start number" />
         <footer>
           <.button phx-disable-with="Saving..." variant="primary">Save Box</.button>
           <.button navigate={return_path("library", @box.id, @library_id)}>Cancel</.button>

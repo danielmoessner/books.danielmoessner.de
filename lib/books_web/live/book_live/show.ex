@@ -8,7 +8,7 @@ defmodule BooksWeb.BookLive.Show do
     ~H"""
     <Layouts.app flash={@flash}>
       <.header>
-        {@book.number} - {@book.name}
+        {@book.number + @book.box.start_number} - {@book.name}
         <:subtitle>by {@book.author}</:subtitle>
         <:actions>
           <.button navigate={

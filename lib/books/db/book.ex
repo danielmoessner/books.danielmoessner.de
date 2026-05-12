@@ -16,6 +16,6 @@ defmodule Books.Book do
   def changeset(book, attrs) do
     book
     |> cast(attrs, [:name, :author, :number, :library_id, :box_id])
-    |> validate_required([:name, :author, :number, :library_id])
+    |> validate_required([:name, :author, :library_id])
   end
 end

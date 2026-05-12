@@ -23,6 +23,7 @@ defmodule BooksWeb.BoxLive.Index do
         row_click={fn {_id, box} -> JS.navigate(~p"/libraries/#{@library_id}/boxes/#{box}") end}
       >
         <:col :let={{_id, box}} label="Name">{box.name}</:col>
+        <:col :let={{_id, box}} label="Start">{box.start_number}</:col>
         <:col :let={{_id, box}} label="Books">{Map.get(@book_counts, box.id, 0)}</:col>
         <:action :let={{_id, box}}>
           <div class="sr-only">

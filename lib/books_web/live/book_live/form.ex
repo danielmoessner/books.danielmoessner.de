@@ -14,7 +14,6 @@ defmodule BooksWeb.BookLive.Form do
 
       <.form for={@form} id="book-form" phx-change="validate" phx-submit="save">
         <.input field={@form[:box_id]} type="select" label="Box" options={@boxes} />
-        <.input field={@form[:number]} type="text" label="Number" />
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:author]} type="text" label="Author" />
         <footer>
@@ -36,6 +35,7 @@ defmodule BooksWeb.BookLive.Form do
     {:ok,
      socket
      |> assign(:return_to, return_to(params["return_to"]))
+     |> assign(:box_id, params["box_id"])
      |> assign(:library_id, params["library_id"])
      |> assign(:book_id, params["book_id"])
      |> assign(:boxes, box_options)
@@ -57,7 +57,12 @@ defmodule BooksWeb.BookLive.Form do
   end
 
   defp apply_action(socket, :new, _params) do
-    book = %Book{}
+    book =
+      case socket.assigns.box_id do
+        nil -> %Book{}
+        "" -> %Book{}
+        box_id -> %Book{box_id: box_id}
+      end
 
     socket
     |> assign(:page_title, "New Book")

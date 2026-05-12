@@ -518,7 +518,7 @@ defmodule BooksWeb.CoreComponents do
         fn {_id, book} -> JS.navigate(~p"/libraries/#{assigns.library_id}/books/#{book}") end
       }
     >
-      <:col :let={{_id, book}} label="Book">{book.number}</:col>
+      <:col :let={{_id, book}} label="Book">{book.box.start_number + book.number}</:col>
       <:col :let={{_id, book}} label="Name">{book.name}</:col>
       <:col :let={{_id, book}} label="Author">{book.author}</:col>
       <:action :let={{_id, book}}>

@@ -5,8 +5,21 @@ defmodule Books.Books do
 
   import Ecto.Query, warn: false
   alias Books.Repo
-
   alias Books.Book
+
+  @doc """
+  Returns the next book number for a given library + box.
+
+  If `box_id` is `nil` (or blank), it falls back to `next_book_number/1`.
+  If the box has no books yet, it returns `box.start_number + 1`.
+  """
+  def next_book_number(box_id) do
+    (Repo.one(
+       from b in Book,
+         where: b.box_id == ^box_id,
+         select: max(b.number)
+     ) || 0) + 1
+  end
 
   @doc """
   Returns the list of books.
@@ -18,21 +31,20 @@ defmodule Books.Books do
 
   """
   def list_books(library_id) do
-    Repo.all(from b in Book, where: b.library_id == ^library_id, order_by: b.number)
+    Repo.all(
+      from b in Book, where: b.library_id == ^library_id, order_by: b.number, preload: [:box]
+    )
   end
 
   def list_books(library_id, box_id) do
     if box_id == nil do
-      Repo.all(
-        from b in Book,
-          where: b.library_id == ^library_id and is_nil(b.box_id),
-          order_by: b.number
-      )
+      list_books(library_id)
     else
       Repo.all(
         from b in Book,
           where: b.library_id == ^library_id and b.box_id == ^box_id,
-          order_by: b.number
+          order_by: b.number,
+          preload: [:box]
       )
     end
   end
@@ -54,7 +66,8 @@ defmodule Books.Books do
         where:
           b.library_id == ^library_id and
             (like(b.name, ^search_pattern) or like(b.author, ^search_pattern)),
-        order_by: b.number
+        order_by: b.number,
+        preload: [:box]
     )
   end
 
@@ -72,7 +85,11 @@ defmodule Books.Books do
       ** (Ecto.NoResultsError)
 
   """
-  def get_book!(id), do: Repo.get!(Book, id)
+  def get_book!(id) do
+    Book
+    |> Repo.get!(id)
+    |> Repo.preload(:box)
+  end
 
   @doc """
   Creates a book.
@@ -87,9 +104,23 @@ defmodule Books.Books do
 
   """
   def create_book(attrs) do
-    %Book{}
-    |> Book.changeset(attrs)
-    |> Repo.insert()
+    changeset =
+      %Book{}
+      |> Book.changeset(attrs)
+
+    changeset =
+      if changeset.valid? do
+        box_id = Ecto.Changeset.get_field(changeset, :box_id)
+        number = next_book_number(box_id)
+
+        changeset
+        |> Ecto.Changeset.put_change(:number, number)
+        |> Ecto.Changeset.validate_required([:number])
+      else
+        changeset
+      end
+
+    Repo.insert(changeset)
   end
 
   @doc """
