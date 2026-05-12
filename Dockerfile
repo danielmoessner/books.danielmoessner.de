@@ -28,6 +28,7 @@ COPY assets assets
 RUN mix assets.deploy
 RUN mix phx.digest
 
+COPY priv/repo priv/repo
 COPY priv/static priv/static
 
 COPY config/runtime.exs config/
