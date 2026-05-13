@@ -1,5 +1,8 @@
 FROM elixir:1.15
 
+ARG IMAGE_VERSION
+ENV IMAGE_VERSION=$IMAGE_VERSION
+
 RUN apt-get update && apt-get install -y nodejs sqlite3
 
 WORKDIR /app
